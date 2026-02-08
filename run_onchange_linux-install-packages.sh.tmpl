@@ -2,33 +2,49 @@
 #!/bin/bash
 set -e
 
-# Apt
-{{- if .packages.linux.apt }}
+echo "[linux-install-packages] Started chezmoi linux package installation script."
+
+echo "[linux-install-packages] Installing and updating apt packages..."
 sudo apt update
 sudo apt install -y \
-{{- range .packages.linux.apt }}
-  {{ . | quote }} \
-{{- end }}
-{{- end }}
+  bat wget curl zsh jq build-essential
 
-# Manual commands
-{{- if .packages.linux.commands }}
-{{- range .packages.linux.commands }}
-{{ . }}
-{{- end }}
-{{- end }}
-
-# Homebrew
-{{- if .packages.linux.homebrew }}
-if ! command -v brew >/dev/null 2>&1; then
-  echo "Homebrew not installed" >&2
-  exit 1
+echo "[linux-install-packages] Checking if zoxide is installed..."
+if ! command -v zoxide &> /dev/null; then
+  echo "[linux-install-packages] > zoxide not found. Installing zoxide..."
+  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+else
+  echo "[linux-install-packages] > zoxide is already installed. Skipping installation."
 fi
+
+echo "[linux-install-packages] Checking if Homebrew is installed..."
+if ! command -v brew &> /dev/null; then
+  echo "[linux-install-packages] > Homebrew not found. Installing Homebrew..."
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+else
+  echo "[linux-install-packages] > Homebrew is already installed. Skipping installation."
+fi
+
+echo "[linux-install-packages] Updating Homebrew and installing homebrew packages..."
 brew update
 brew install \
-{{- range .packages.linux.homebrew }}
-  {{ . | quote }} \
-{{- end }}
-{{- end }}
+  fzf \
+  gh \
+  yq \
+  kubectl \
+  kubectx \
+  derailed/k9s/k9s \
+  gcc
 
+echo "[linux-install-packages] Finished installing packages."
+
+echo "[linux-install-packages] Checking if zsh is the default shell..."
+if [ "$SHELL" = "$(which zsh)" ]; then
+  echo "[linux-install-packages] > zsh is already the default shell. Skipping shell change."
+else
+  echo "[linux-install-packages] > Changing default shell to zsh..."
+  chsh -s $(which zsh)
+fi
+
+echo "[linux-install-packages] Finished chezmoi linux package installation script."
 {{- end }}
