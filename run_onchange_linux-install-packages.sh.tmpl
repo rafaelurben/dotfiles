@@ -1,0 +1,34 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+set -e
+
+# Apt
+{{- if .packages.linux.apt }}
+sudo apt update
+sudo apt install -y \
+{{- range .packages.linux.apt }}
+  {{ . | quote }} \
+{{- end }}
+{{- end }}
+
+# Manual commands
+{{- if .packages.linux.commands }}
+{{- range .packages.linux.commands }}
+{{ . }}
+{{- end }}
+{{- end }}
+
+# Homebrew
+{{- if .packages.linux.homebrew }}
+if ! command -v brew >/dev/null 2>&1; then
+  echo "Homebrew not installed" >&2
+  exit 1
+fi
+brew update
+brew install \
+{{- range .packages.linux.homebrew }}
+  {{ . | quote }} \
+{{- end }}
+{{- end }}
+
+{{- end }}
