@@ -1,0 +1,23 @@
+[user]
+	email = github@rafaelurben.ch
+	name = rafaelurben
+[init]
+	defaultBranch = main
+[core]
+	autocrlf = false
+[credential "https://git.ffhs.ch"]
+	provider = generic
+[credential "https://git.heroku.com"]
+	provider = generic
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+{{ if eq .chezmoi.os "windows" -}}
+[gpg]
+	program = C:\\Program Files\\Git\\usr\\bin\\gpg.exe
+[commit]
+	gpgsign = true
+{{- end }}
