@@ -9,14 +9,6 @@ sudo apt update
 sudo apt install -y \
   bat wget curl zsh jq build-essential
 
-echo "[linux-install-packages] Checking if zoxide is installed..."
-if ! command -v zoxide &> /dev/null; then
-  echo "[linux-install-packages] > zoxide not found. Installing zoxide..."
-  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-else
-  echo "[linux-install-packages] > zoxide is already installed. Skipping installation."
-fi
-
 echo "[linux-install-packages] Checking if Homebrew is installed..."
 if ! command -v brew &> /dev/null; then
   echo "[linux-install-packages] > Homebrew not found. Installing Homebrew..."
@@ -45,6 +37,15 @@ else
   echo "[linux-install-packages] > Changing default shell to zsh..."
   chsh -s $(which zsh)
 fi
+
+echo "[linux-install-packages] Setting up Oh My Zsh..."
+if [ -d "$HOME/.oh-my-zsh" ]; then
+  echo "[linux-install-packages] > Oh My Zsh is already installed. Skipping installation."
+else
+  echo "[linux-install-packages] > Oh My Zsh not found. Installing Oh My Zsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" ""  --unattended
+fi
+echo "[linux-install-packages] Finished setting up Oh My Zsh."
 
 echo "[linux-install-packages] Finished chezmoi linux package installation script."
 {{- end }}

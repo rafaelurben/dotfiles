@@ -1,0 +1,40 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -e
+
+echo "[macos-install-packages] Started chezmoi macos package installation script."
+
+echo "[macos-install-packages] Checking if Homebrew is installed..."
+if ! command -v brew &> /dev/null; then
+  echo "[macos-install-packages] > Homebrew not found. Please install it first."
+  exit 1
+else
+  echo "[macos-install-packages] > Homebrew is already installed. Perfect!"
+fi
+
+echo "[macos-install-packages] Installing and updating Homebrew packages..."
+brew update
+brew install \
+  fzf \
+  gh \
+  yq \
+  zoxide \
+  kubectl \
+  kubectx \
+  derailed/k9s/k9s \
+  gcc
+
+echo "[macos-install-packages] Finished installing Homebrew packages."
+
+echo "[macos-install-packages] Setting up Oh My Zsh..."
+if [ -d "$HOME/.oh-my-zsh" ]; then
+  echo "[macos-install-packages] > Oh My Zsh is already installed. Skipping installation."
+else
+  echo "[macos-install-packages] > Oh My Zsh not found. Installing Oh My Zsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" ""  --unattended
+
+fi
+echo "[macos-install-packages] Finished setting up Oh My Zsh."
+
+echo "[macos-install-packages] Finished chezmoi macos package installation script."
+{{- end }}
