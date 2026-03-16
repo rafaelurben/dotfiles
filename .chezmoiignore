@@ -1,5 +1,7 @@
 README.md
 {{ if ne .chezmoi.os "linux" }}
 .bashrc
+{{ if ne .chezmoi.os "darwin" }}
 .zshrc
+{{ end }}
 {{ end }}
