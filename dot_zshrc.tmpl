@@ -1,5 +1,10 @@
-# If you come from bash you might have to change your $PATH.
+# PATH
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
+# Linux only
+{{ if eq .chezmoi.os "linux" -}}
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+{{- end }}
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
