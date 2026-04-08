@@ -1,0 +1,14 @@
+{{ if eq .chezmoi.os "windows" -}}
+# PowerShell profile for Windows
+# This file is located at $HOME\Documents\PowerShell\Profile.ps1
+
+# Use fzf on Ctrl+r to search command history
+function Invoke-FzfHistory {
+    $command = (Get-Content (Get-PSReadlineOption).HistorySavePath | fzf)
+    if ($command) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert($command)    
+    }
+}
+Set-PSReadlineKeyHandler -Key Ctrl+r -ScriptBlock { Invoke-FzfHistory }
+
+{{- end -}}
