@@ -1,10 +1,7 @@
 worker_processes  1;
 
-error_log  /opt/homebrew/etc/nginx/logs/error.log;
-# error_log  /opt/homebrew/etc/nginx/logs/error.log  notice;
-# error_log  /opt/homebrew/etc/nginx/logs/error.log  info;
-
-pid        /opt/homebrew/etc/nginx/logs/nginx.pid;
+pid        "{{ .data.nginx.installConfigDir }}/logs/nginx.pid";
+error_log  "{{ .data.nginx.installConfigDir }}/logs/error.log" warn;
 
 events {
     worker_connections  1024;
@@ -18,7 +15,7 @@ http {
     #                  '$status $body_bytes_sent "$http_referer" '
     #                  '"$http_user_agent" "$http_x_forwarded_for"';
 
-    # access_log  /opt/homebrew/etc/nginx/logs/access.log  main;
+    # access_log  "{{ .data.nginx.installConfigDir }}/logs/access.log"  main;
 
     sendfile        on;
 
@@ -30,13 +27,13 @@ http {
     server {
         listen       443 ssl default_server;
 
-        ssl_certificate      "/opt/homebrew/etc/nginx/ssl/nginx.crt";
-        ssl_certificate_key  "/opt/homebrew/etc/nginx/ssl/nginx.key";
+        ssl_certificate      "{{ .data.nginx.customConfigDir }}/ssl/nginx.crt";
+        ssl_certificate_key  "{{ .data.nginx.customConfigDir }}/ssl/nginx.key";
 
         # Django Teamized Frontend Development Server
         location /__dev__/ {
             proxy_pass http://localhost:8081;
-	        proxy_set_header Host $host;
+            proxy_set_header Host $host;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -45,7 +42,7 @@ http {
         # Django
         location / {
             proxy_pass http://localhost:8080;
-	        proxy_set_header Host $host;
+            proxy_set_header Host $host;
         }
     }
 
@@ -54,12 +51,12 @@ http {
         listen       443 ssl;
         server_name  angular.local;
 
-        ssl_certificate      "/opt/homebrew/etc/nginx/ssl/nginx.crt";
-        ssl_certificate_key  "/opt/homebrew/etc/nginx/ssl/nginx.key";
+        ssl_certificate      "{{ .data.nginx.customConfigDir }}/ssl/nginx.crt";
+        ssl_certificate_key  "{{ .data.nginx.customConfigDir }}/ssl/nginx.key";
 
         location / {
             proxy_pass http://localhost:4200;
-	        proxy_set_header Host $host;
+            proxy_set_header Host $host;
         }
     }
 

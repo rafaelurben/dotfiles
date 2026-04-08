@@ -1,0 +1,27 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -e
+
+echo "[macos-config] Started chezmoi macos config script."
+
+# Create SSL certificate if it doesn't exist
+if [ ! -f "{{ .data.nginx.customConfigDir }}/ssl/nginx.crt" ] || [ ! -f "{{ .data.nginx.customConfigDir }}/ssl/nginx.key" ]; then
+  echo "[macos-config] SSL certificate not found. Creating self-signed SSL certificate for nginx..."
+  mkdir -p {{ .data.nginx.customConfigDir }}/ssl
+  openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout {{ .data.nginx.customConfigDir }}/ssl/nginx.key -out {{ .data.nginx.customConfigDir }}/ssl/nginx.crt -subj "/CN=localhost"
+  echo "[macos-config] SSL certificate created at {{ .data.nginx.customConfigDir }}/ssl/nginx.crt and {{ .data.nginx.customConfigDir }}/ssl/nginx.key."
+else
+  echo "[macos-config] SSL certificate already exists. Skipping SSL certificate creation."
+fi
+# Create symbolic link for nginx configuration if it doesn't exist
+if [ ! -f "{{ .data.nginx.installConfigDir }}/nginx.conf" ]; then
+  echo "[macos-config] Creating symbolic link for nginx configuration..."
+  ln -s {{ .data.nginx.customConfigDir }}/nginx.conf {{ .data.nginx.installConfigDir }}/nginx.conf
+  echo "[macos-config] Symbolic link for nginx configuration created at {{ .data.nginx.installConfigDir }}/nginx.conf."
+else
+  echo "[macos-config] Symbolic link for nginx configuration already exists. Skipping symbolic link creation."
+fi
+mkdir -p {{ .data.nginx.installConfigDir }}/logs
+
+echo "[macos-config] Finished chezmoi macos config script."
+{{- end }}

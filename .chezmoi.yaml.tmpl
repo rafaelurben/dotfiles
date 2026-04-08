@@ -1,0 +1,11 @@
+data:
+  data:
+    nginx:
+      customConfigDir: {{ .chezmoi.homeDir }}/.config/nginx
+      {{ if eq .chezmoi.os "darwin" -}}
+      installConfigDir: /opt/homebrew/etc/nginx
+      {{- else if eq .chezmoi.os "linux" -}}
+      installConfigDir: /usr/local/nginx/conf
+      {{- else if eq .chezmoi.os "windows" -}}
+      installConfigDir: {{ .chezmoi.homeDir }}/scoop/apps/nginx/current/conf
+      {{- end }}

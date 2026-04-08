@@ -1,0 +1,36 @@
+{{ if eq .chezmoi.os "windows" -}}
+$ErrorActionPreference = "Stop"
+
+Write-Host "[windows-config] Started chezmoi windows config script."
+
+$customConfigDir = "{{ .data.nginx.customConfigDir }}"
+$installConfigDir = "{{ .data.nginx.installConfigDir }}"
+$sslDir = Join-Path $customConfigDir "ssl"
+$crtPath = Join-Path $sslDir "nginx.crt"
+$keyPath = Join-Path $sslDir "nginx.key"
+
+# Create SSL certificate if it doesn't exist
+if (-not (Test-Path $crtPath) -or -not (Test-Path $keyPath)) {
+    Write-Host "[windows-config] SSL certificate not found. Creating self-signed SSL certificate for nginx..."
+    New-Item -ItemType Directory -Path $sslDir -Force | Out-Null
+
+    if (-not (Get-Command openssl -ErrorAction SilentlyContinue)) {
+        throw "[windows-config] OpenSSL is required to generate nginx.crt/nginx.key. Restart the terminal and run chezmoi apply again."
+    }
+
+    & openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $keyPath -out $crtPath -subj "/CN=localhost"
+    Write-Host "[windows-config] SSL certificate created at $crtPath and $keyPath."
+} else {
+    Write-Host "[windows-config] SSL certificate already exists. Skipping SSL certificate creation."
+}
+
+# Create symbolic link for nginx configuration
+$sourceConfigPath = Join-Path $customConfigDir "nginx.conf"
+$targetConfigPath = Join-Path $installConfigDir "nginx.conf"
+
+Write-Host "[windows-config] Creating symbolic link for nginx configuration..."
+New-Item -ItemType SymbolicLink -Path $targetConfigPath -Target $sourceConfigPath -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $installConfigDir "logs") -Force | Out-Null
+
+Write-Host "[windows-config] Finished chezmoi windows config script."
+{{- end }}
