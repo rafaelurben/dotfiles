@@ -1,4 +1,3 @@
-{{ if eq .chezmoi.os "windows" -}}
 # PowerShell profile for Windows
 # This file is located at $HOME\Documents\PowerShell\Profile.ps1
 
@@ -10,5 +9,3 @@ function Invoke-FzfHistory {
     }
 }
 Set-PSReadlineKeyHandler -Key Ctrl+r -ScriptBlock { Invoke-FzfHistory }
-
-{{- end -}}
