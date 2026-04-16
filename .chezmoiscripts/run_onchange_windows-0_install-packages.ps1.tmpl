@@ -12,7 +12,8 @@ if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
 # Update scoop and install packages
 Write-Host "[windows-install-packages] Updating Scoop and installing packages..."
 scoop update
-scoop install fzf kubectl k9s kubens kubectx jq jid yq gh nginx openssl
+scoop bucket add extras
+scoop install fzf kubectl k9s kubens kubectx jq jid yq gh nginx mkcert
 
 Write-Host "[windows-install-packages] Finished installing packages."
 

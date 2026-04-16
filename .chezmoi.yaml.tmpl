@@ -7,5 +7,6 @@ data:
       {{- else if eq .chezmoi.os "linux" -}}
       installConfigDir: /usr/local/nginx/conf
       {{- else if eq .chezmoi.os "windows" -}}
+      prefixPath: {{ .chezmoi.homeDir }}/scoop/apps/nginx/current
       installConfigDir: {{ .chezmoi.homeDir }}/scoop/apps/nginx/current/conf
       {{- end }}

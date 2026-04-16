@@ -9,3 +9,58 @@ function Invoke-FzfHistory {
     }
 }
 Set-PSReadlineKeyHandler -Key Ctrl+r -ScriptBlock { Invoke-FzfHistory }
+
+# Nginx default parameters
+$nginxPrefix = "{{ .data.nginx.prefixPath }}"
+$nginxExe = Join-Path $nginxPrefix "nginx.exe"
+
+function Nginx-WithConfig {
+    $nginxPrefix = "{{ .data.nginx.prefixPath }}"
+    $nginxExe = Join-Path $nginxPrefix "nginx.exe"
+    if (-not (Test-Path $nginxExe)) {
+        Write-Host "[profile] nginx executable not found at $nginxExe."
+        return
+    }
+    Write-Host "[profile] Running nginx at $nginxExe with prefix $nginxPrefix"
+
+    & $nginxExe -p "$nginxPrefix" $args
+}
+
+# Test nginx configuration
+function Test-Nginx {
+    Write-Host "[profile] Testing nginx configuration..."
+    Nginx-WithConfig -t
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[profile] nginx configuration test failed. Not starting nginx."
+        return $false
+    }
+    return $true
+}
+
+# Stop nginx gracefully when available.
+function Stop-Nginx {
+    $nginxProcess = Get-Process nginx -ErrorAction SilentlyContinue
+    if (-not $nginxProcess) {
+        Write-Host "[profile] nginx is not running."
+        return
+    }
+    $nginxProcess.Kill()
+    Write-Host "[profile] nginx killed."
+}
+
+# Start nginx
+function Start-Nginx {
+    if (-not (Test-Nginx)) {
+        return
+    }
+    & $nginxExe -p "$nginxPrefix" $args &
+    Write-Host "[profile] nginx started."
+}
+
+# Restart nginx by stopping any running process and starting a fresh one.
+function Restart-Nginx {
+    Stop-Nginx
+    Start-Nginx
+}
+
+Set-Alias nginx Nginx-WithConfig
