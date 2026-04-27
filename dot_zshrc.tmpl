@@ -1,9 +1,13 @@
 # PATH
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
-# Linux only
+# OS specific configuration
 {{ if eq .chezmoi.os "linux" -}}
+# Linux only
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+{{- else if eq .chezmoi.os "darwin" -}}
+# macOS only
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 {{- end }}
 
 # Path to your Oh My Zsh installation.
