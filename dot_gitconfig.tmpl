@@ -1,6 +1,7 @@
 [user]
-	email = github@rafaelurben.ch
-	name = rafaelurben
+	email = git@rafaelurben.ch
+	name = Rafael Urben
+	signingkey = {{ .chezmoi.homeDir }}/.ssh/git_key
 [init]
 	defaultBranch = main
 [core]
@@ -14,10 +15,7 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-
-{{ if eq .chezmoi.os "windows" -}}
 [gpg]
-	program = C:\\Program Files\\Git\\usr\\bin\\gpg.exe
+	format = ssh
 [commit]
 	gpgsign = true
-{{- end }}
